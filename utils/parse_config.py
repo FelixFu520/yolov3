@@ -1,7 +1,11 @@
 
 
 def parse_model_config(path):
-    """Parses the yolo-v3 layer configuration file and returns module definitions"""
+    """
+    功能：Parses the yolo-v3 layer configuration file and returns module definitions
+    :param path: config/yolov3.cfg
+    :return:
+    """
     file = open(path, 'r')
     lines = file.read().split('\n')
     lines = [x for x in lines if x and not x.startswith('#')]
@@ -21,7 +25,11 @@ def parse_model_config(path):
     return module_defs
 
 def parse_data_config(path):
-    """Parses the data configuration file"""
+    """
+    功能：Parses the data configuration file
+    :param path: config/coco.data
+    :return:
+    """
     options = dict()
     options['gpus'] = '0,1,2,3'
     options['num_workers'] = '10'

@@ -182,9 +182,15 @@ def get_batch_statistics(outputs, targets, iou_threshold):
 
 
 def bbox_wh_iou(wh1, wh2):
-    wh2 = wh2.t()
-    w1, h1 = wh1[0], wh1[1]
-    w2, h2 = wh2[0], wh2[1]
+    """
+    功能：计算iou，真实标签与anchor（3个）
+    :param wh1:
+    :param wh2:
+    :return:
+    """
+    wh2 = wh2.t()   # size (2, 181)
+    w1, h1 = wh1[0], wh1[1] # w1 和 h1 是标量
+    w2, h2 = wh2[0], wh2[1] # w2 和 h2 都是181大小的向量
     inter_area = torch.min(w1, w2) * torch.min(h1, h2)
     union_area = (w1 * h1 + 1e-16) + w2 * h2 - inter_area
     return inter_area / union_area
@@ -265,57 +271,74 @@ def non_max_suppression(prediction, conf_thres=0.5, nms_thres=0.4):
 
 
 def build_targets(pred_boxes, pred_cls, target, anchors, ignore_thres):
+    """
+
+    :param pred_boxes:(20, 3, 15, 15, 4) # 预测delta值 & anchor --> 预测框的值，相对于grid * grid大小
+    :param pred_cls:(20, 3, 15, 15, 80) # 预测的类别
+    :param target:(175, 6)  # 标签（batchsize id, cls，cx（0～1，相对于整张图),cy（0～1，相对于整张图）,w（0～1）,h（0～1）
+    :param anchors:(3, 2)   # 相对于grid * grid大小的anchor
+    :param ignore_thres:0.5
+    :return:
+    """
 
     ByteTensor = torch.cuda.ByteTensor if pred_boxes.is_cuda else torch.ByteTensor
     FloatTensor = torch.cuda.FloatTensor if pred_boxes.is_cuda else torch.FloatTensor
 
-    nB = pred_boxes.size(0)
-    nA = pred_boxes.size(1)
-    nC = pred_cls.size(-1)
-    nG = pred_boxes.size(2)
+    nB = pred_boxes.size(0) # number of batchsize
+    nA = pred_boxes.size(1) # number of anchor
+    nC = pred_cls.size(-1)  # number of class
+    nG = pred_boxes.size(2) # number of grid
 
     # Output tensors
-    obj_mask = ByteTensor(nB, nA, nG, nG).fill_(0)
-    noobj_mask = ByteTensor(nB, nA, nG, nG).fill_(1)
-    class_mask = FloatTensor(nB, nA, nG, nG).fill_(0)
-    iou_scores = FloatTensor(nB, nA, nG, nG).fill_(0)
-    tx = FloatTensor(nB, nA, nG, nG).fill_(0)
+    obj_mask = ByteTensor(nB, nA, nG, nG).fill_(0)      # 存放 size (20, 3, 16, 16)  有obj的mask
+    noobj_mask = ByteTensor(nB, nA, nG, nG).fill_(1)    # 存放 无obj的mask
+    class_mask = FloatTensor(nB, nA, nG, nG).fill_(0)   # 存放 每个grid 类别的mask
+    iou_scores = FloatTensor(nB, nA, nG, nG).fill_(0)   # 存放 每个grid iou
+    tx = FloatTensor(nB, nA, nG, nG).fill_(0)           # 存放 tx（真实）
     ty = FloatTensor(nB, nA, nG, nG).fill_(0)
     tw = FloatTensor(nB, nA, nG, nG).fill_(0)
     th = FloatTensor(nB, nA, nG, nG).fill_(0)
-    tcls = FloatTensor(nB, nA, nG, nG, nC).fill_(0)
+    tcls = FloatTensor(nB, nA, nG, nG, nC).fill_(0)     # 存放 类别（真实）
 
     # Convert to position relative to box
-    target_boxes = target[:, 2:6] * nG
-    gxy = target_boxes[:, :2]
-    gwh = target_boxes[:, 2:]
-    # Get anchors with best iou
-    ious = torch.stack([bbox_wh_iou(anchor, gwh) for anchor in anchors])
-    best_ious, best_n = ious.max(0)
-    # Separate target values
-    b, target_labels = target[:, :2].long().t()
-    gx, gy = gxy.t()
-    gw, gh = gwh.t()
-    gi, gj = gxy.long().t()
-    # Set masks
-    obj_mask[b, best_n, gj, gi] = 1
-    noobj_mask[b, best_n, gj, gi] = 0
+    target_boxes = target[:, 2:6] * nG  # 将target的0～1改为 0～1 * grid， target_boxes相对于grid * grid大小
+    gxy = target_boxes[:, :2]   # ground truth xy （181， 2），相对于grid * grid 大小
+    gwh = target_boxes[:, 2:]   # ground truth wh  （181， 2），相对于grid * grid 大小
 
-    # Set noobj mask to zero where iou exceeds ignore threshold
+    # Get anchors with best iou，计算真实标签的bbox与anchors（本例是3个）iou最大的一个。例如，选择真实标签和那个anchors中对应。
+    ious = torch.stack([bbox_wh_iou(anchor, gwh) for anchor in anchors])    # 此处anchor相对于grid * grid， 真实g和anchor交集
+    best_ious, best_n = ious.max(0) # ious真实标签框和3个anchor的iou，然后best_iou是3个anchor之中与真实标签iou最好的，best_n对应第几个anchor
+
+    # Separate target values
+    b, target_labels = target[:, :2].long().t()     # b表示batchsize中某一张图片，target_labels表示此bbox的类别
+    gx, gy = gxy.t()    # gx 真实标签的x size=181， gy同理，相对于grid*grid
+    gw, gh = gwh.t()    # gw 真实标签的w
+    gi, gj = gxy.long().t() # grid的i和j
+
+    # Set masks，target和3个anchor中iou最大的一个（3选1），设置成有obj。其余2个anchor依旧是无obj
+    obj_mask[b, best_n, gj, gi] = 1     # 为什么标记的数小于真实标签数，例如target的数量是（129，6），而int(obj_mask[obj_mask==1].size(0)) = 114
+    noobj_mask[b, best_n, gj, gi] = 0   # noobj设置为0，即有obj或者忽略
+
+    # Set noobj mask to zero where iou exceeds ignore threshold，
+    # best_ious是最大的IOU，但是ious中还有很多是超过ignore_thres的。所以要忽略
     for i, anchor_ious in enumerate(ious.t()):
         noobj_mask[b[i], anchor_ious > ignore_thres, gj[i], gi[i]] = 0
 
+    # 真实标签，调整到和pred相同的格式，即delta x/y，
     # Coordinates
     tx[b, best_n, gj, gi] = gx - gx.floor()
     ty[b, best_n, gj, gi] = gy - gy.floor()
     # Width and height
-    tw[b, best_n, gj, gi] = torch.log(gw / anchors[best_n][:, 0] + 1e-16)
+    tw[b, best_n, gj, gi] = torch.log(gw / anchors[best_n][:, 0] + 1e-16)   # gw size 179 相对于grid*grid， anchors:(3, 2)相对于grid * grid大小
     th[b, best_n, gj, gi] = torch.log(gh / anchors[best_n][:, 1] + 1e-16)
     # One-hot encoding of label
-    tcls[b, best_n, gj, gi, target_labels] = 1
-    # Compute label correctness and iou at best anchor
+    tcls[b, best_n, gj, gi, target_labels] = 1  # size torch.Size([20, 3, 11, 11, 80])
+
+    # Compute label correctness and iou at best anchor，计算标签的正确性和iou at best anchor
     class_mask[b, best_n, gj, gi] = (pred_cls[b, best_n, gj, gi].argmax(-1) == target_labels).float()
+    # pred_cls:(20, 3, 15, 15, 80) 预测的类别,
     iou_scores[b, best_n, gj, gi] = bbox_iou(pred_boxes[b, best_n, gj, gi], target_boxes, x1y1x2y2=False)
+    # iou_scores torch.Size([20, 3, 11, 11]) ,pred_boxes 和 target_boxes的iou， 对应每个grid * grid
 
     tconf = obj_mask.float()
     return iou_scores, class_mask, obj_mask, noobj_mask, tx, ty, tw, th, tcls, tconf

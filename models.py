@@ -15,7 +15,9 @@ import matplotlib.patches as patches
 
 def create_modules(module_defs):
     """
-    Constructs module list of layer blocks from module configuration in module_defs
+    功能：Constructs module list of layer blocks from module configuration in module_defs
+    :param module_defs:
+    :return:
     """
     hyperparams = module_defs.pop(0)
     output_filters = [int(hyperparams["channels"])]
@@ -87,6 +89,11 @@ class Upsample(nn.Module):
     """ nn.Upsample is deprecated """
 
     def __init__(self, scale_factor, mode="nearest"):
+        """
+        功能：Upsample 初始化
+        :param scale_factor:
+        :param mode:
+        """
         super(Upsample, self).__init__()
         self.scale_factor = scale_factor
         self.mode = mode
@@ -121,12 +128,20 @@ class YOLOLayer(nn.Module):
         self.grid_size = 0  # grid size
 
     def compute_grid_offsets(self, grid_size, cuda=True):
+        """
+        功能：
+            1、输出grid * grid的矩阵
+            2、标准化anchor_w/h,即将anchor大小缩放到适合grid * grid大小
+        :param grid_size:
+        :param cuda:
+        :return:
+        """
         self.grid_size = grid_size
         g = self.grid_size
         FloatTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor
         self.stride = self.img_dim / self.grid_size
         # Calculate offsets for each grid
-        self.grid_x = torch.arange(g).repeat(g, 1).view([1, 1, g, g]).type(FloatTensor)
+        self.grid_x = torch.arange(g).repeat(g, 1).view([1, 1, g, g]).type(FloatTensor)     # size=(1, 1, g, g)
         self.grid_y = torch.arange(g).repeat(g, 1).t().view([1, 1, g, g]).type(FloatTensor)
         self.scaled_anchors = FloatTensor([(a_w / self.stride, a_h / self.stride) for a_w, a_h in self.anchors])
         self.anchor_w = self.scaled_anchors[:, 0:1].view((1, self.num_anchors, 1, 1))
@@ -143,13 +158,15 @@ class YOLOLayer(nn.Module):
         num_samples = x.size(0)
         grid_size = x.size(2)
 
+        # 320...(*32)...512 --> 缩小 32/16/8 倍
+        # 例如x=(20, 255, 12, 12) -> (20, 3, 12, 12, 85)
         prediction = (
             x.view(num_samples, self.num_anchors, self.num_classes + 5, grid_size, grid_size)
             .permute(0, 1, 3, 4, 2)
             .contiguous()
         )
 
-        # Get outputs
+        # Get outputs，[cx(0~1),cy(0~1),w,h,pred_conf(0~1),pred_cls(0~1)]
         x = torch.sigmoid(prediction[..., 0])  # Center x
         y = torch.sigmoid(prediction[..., 1])  # Center y
         w = prediction[..., 2]  # Width
@@ -161,16 +178,17 @@ class YOLOLayer(nn.Module):
         if grid_size != self.grid_size:
             self.compute_grid_offsets(grid_size, cuda=x.is_cuda)
 
-        # Add offset and scale with anchors
-        pred_boxes = FloatTensor(prediction[..., :4].shape)
+        # Add offset and scale with anchors，相对于grid * grid 大小
+        pred_boxes = FloatTensor(prediction[..., :4].shape)     # prediction size (20, 3, 12, 12, 85)
         pred_boxes[..., 0] = x.data + self.grid_x
         pred_boxes[..., 1] = y.data + self.grid_y
         pred_boxes[..., 2] = torch.exp(w.data) * self.anchor_w
         pred_boxes[..., 3] = torch.exp(h.data) * self.anchor_h
 
+        # 通过   预测的（cx, cy, w, h)和anchor的（w, h)   计算出 预测框pred_boxes size=(20, 3, 15, 15, 4)
         output = torch.cat(
             (
-                pred_boxes.view(num_samples, -1, 4) * self.stride,
+                pred_boxes.view(num_samples, -1, 4) * self.stride,  # 使grid*grid大小的特征图 扩展到 原始大小，相对于图像原始大小
                 pred_conf.view(num_samples, -1, 1),
                 pred_cls.view(num_samples, -1, self.num_classes),
             ),
@@ -181,14 +199,17 @@ class YOLOLayer(nn.Module):
             return output, 0
         else:
             iou_scores, class_mask, obj_mask, noobj_mask, tx, ty, tw, th, tcls, tconf = build_targets(
-                pred_boxes=pred_boxes,
-                pred_cls=pred_cls,
-                target=targets,
-                anchors=self.scaled_anchors,
+                pred_boxes=pred_boxes, # 预测delta值 & anchor --> 预测框的值，相对于grid * grid大小
+                pred_cls=pred_cls,  # 预测的类别
+                target=targets,     # 标签（batchsize id, cls，cx（0～1，相对于整张图),cy（0～1，相对于整张图）,w（0～1）,h（0～1）
+                anchors=self.scaled_anchors,    # 相对于grid * grid大小的anchor
                 ignore_thres=self.ignore_thres,
             )
 
             # Loss : Mask outputs to ignore non-existing objects (except with conf. loss)
+            obj_mask = obj_mask.bool()  # convert int8 to bool
+            noobj_mask = noobj_mask.bool()  # convert int8 to bool
+
             loss_x = self.mse_loss(x[obj_mask], tx[obj_mask])
             loss_y = self.mse_loss(y[obj_mask], ty[obj_mask])
             loss_w = self.mse_loss(w[obj_mask], tw[obj_mask])
@@ -235,8 +256,15 @@ class Darknet(nn.Module):
     """YOLOv3 object detection model"""
 
     def __init__(self, config_path, img_size=416):
+        """
+        功能：Darknet 初始化
+        :param config_path:
+        :param img_size:
+        """
         super(Darknet, self).__init__()
+        # self.module_defs 模型定义配置文件
         self.module_defs = parse_model_config(config_path)
+        # self.hyperparams 超参数； self.module_list 已转换的模型列表
         self.hyperparams, self.module_list = create_modules(self.module_defs)
         self.yolo_layers = [layer[0] for layer in self.module_list if hasattr(layer[0], "metrics")]
         self.img_size = img_size
