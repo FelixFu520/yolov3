@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fdf4301f-b6c8-44ae-ac04-6c1606a1bcf0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/config/yolov3.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/config/yolov3.cfg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/detect.py" beforeDir="false" afterPath="$PROJECT_DIR$/detect.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/augmentations.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/augmentations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/datasets.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/datasets.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/parse_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/parse_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,52 +15,22 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="16" column="12" lean-forward="true" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+            <state relative-caret-position="152">
+              <caret line="150" column="52" selection-start-line="150" selection-start-column="52" selection-end-line="150" selection-end-column="52" />
               <folding>
+                <element signature="e#0#31#0" expanded="true" />
                 <element signature="e#3362#3611#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1081">
-              <caret line="200" column="34" selection-start-line="200" selection-start-column="24" selection-end-line="200" selection-end-column="34" />
-              <folding>
-                <element signature="e#370#3465#0" />
-                <element signature="e#737#1559#0" />
-                <element signature="e#1619#2020#0" />
-                <element signature="e#2081#2221#0" />
-                <element signature="e#2279#2470#0" />
-                <element signature="e#2531#2653#0" />
-                <element signature="e#3539#3860#0" />
-                <element signature="e#3846#3965#0" />
-                <element signature="e#11251#13804#0" />
-                <element signature="e#13867#15029#0" />
+                <element signature="e#3782#5808#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/utils/utils.py">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="269">
-              <caret line="338" column="41" lean-forward="true" selection-start-line="338" selection-start-column="41" selection-end-line="338" selection-end-column="41" />
-              <folding>
-                <element signature="e#344#469#0" />
-                <element signature="e#504#781#0" />
-                <element signature="e#843#1586#0" />
-                <element signature="e#1611#1810#0" />
-                <element signature="e#1867#3615#0" />
-                <element signature="e#3657#4554#0" />
-                <element signature="e#4620#5995#0" />
-                <element signature="e#6368#7659#0" />
-                <element signature="e#7734#9599#0" />
-              </folding>
+            <state relative-caret-position="24">
+              <caret line="1" column="6" selection-start-line="1" selection-start-column="6" selection-end-line="1" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -129,8 +92,8 @@
       <find>from</find>
       <find>yolo</find>
       <find>size</find>
-      <find>long</find>
       <find>op</find>
+      <find>long</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -153,6 +116,7 @@
         <option value="$PROJECT_DIR$/utils/parse_config.py" />
         <option value="$PROJECT_DIR$/models.py" />
         <option value="$PROJECT_DIR$/utils/utils.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -191,11 +155,6 @@
               <item name="yolov3" type="b2602c69:ProjectViewProjectNode" />
               <item name="yolov3" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="yolov3" type="b2602c69:ProjectViewProjectNode" />
-              <item name="yolov3" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -203,6 +162,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
@@ -300,23 +260,23 @@
       <workItem from="1600245891116" duration="241000" />
       <workItem from="1600246282794" duration="1235000" />
       <workItem from="1600666048299" duration="979000" />
-      <workItem from="1600736131711" duration="50876000" />
+      <workItem from="1600736131711" duration="52255000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="119262000" />
+    <option name="totallyTimeSpent" value="120641000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" weight="0.16309012" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.16309012" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="1" />
-      <window_info anchor="bottom" id="Terminal" order="2" sideWeight="0.49928468" weight="0.33493975" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="2" sideWeight="0.49928468" visible="true" weight="0.33493975" />
       <window_info anchor="bottom" id="Event Log" order="3" sideWeight="0.5007153" side_tool="true" weight="0.33493975" />
       <window_info anchor="bottom" id="Version Control" order="4" weight="0.32891566" />
       <window_info anchor="bottom" id="File Transfer" order="5" weight="0.32048193" />
@@ -324,7 +284,7 @@
       <window_info anchor="bottom" id="Message" order="7" />
       <window_info anchor="bottom" id="Find" order="8" weight="0.32891566" />
       <window_info anchor="bottom" id="Run" order="9" weight="0.33734939" />
-      <window_info active="true" anchor="bottom" id="Debug" order="10" sideWeight="0.49928468" visible="true" weight="0.33493975" />
+      <window_info anchor="bottom" id="Debug" order="10" sideWeight="0.49928468" weight="0.33493975" />
       <window_info anchor="bottom" id="Cvs" order="11" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="12" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="13" />
@@ -520,13 +480,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="14">
-          <caret line="7" column="9" lean-forward="true" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Library/Caches/PyCharm2019.1/remote_sources/1105389854/-1171821208/apport_python_hook.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="185">
@@ -583,16 +536,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="16" column="12" lean-forward="true" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
-          <folding>
-            <element signature="e#3362#3611#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils/datasets.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="121">
@@ -604,10 +547,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/utils/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="64" column="15" lean-forward="true" selection-start-line="64" selection-start-column="15" selection-end-line="64" selection-end-column="15" />
+          <folding>
+            <element signature="e#344#469#0" />
+            <element signature="e#504#781#0" />
+            <element signature="e#843#1586#0" />
+            <element signature="e#1611#1810#0" />
+            <element signature="e#3657#4554#0" />
+            <element signature="e#4620#5995#0" />
+            <element signature="e#6368#7659#0" />
+            <element signature="e#7734#9599#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1081">
-          <caret line="200" column="34" selection-start-line="200" selection-start-column="24" selection-end-line="200" selection-end-column="34" />
+        <state relative-caret-position="183">
+          <caret line="287" selection-start-line="287" selection-end-line="287" />
           <folding>
             <element signature="e#370#3465#0" />
             <element signature="e#737#1559#0" />
@@ -623,21 +583,32 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils/utils.py">
+    <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="338" column="41" lean-forward="true" selection-start-line="338" selection-start-column="41" selection-end-line="338" selection-end-column="41" />
+        <state relative-caret-position="293">
+          <caret line="53" column="52" selection-start-line="53" selection-start-column="52" selection-end-line="53" selection-end-column="52" />
           <folding>
-            <element signature="e#344#469#0" />
-            <element signature="e#504#781#0" />
-            <element signature="e#843#1586#0" />
-            <element signature="e#1611#1810#0" />
-            <element signature="e#1867#3615#0" />
-            <element signature="e#3657#4554#0" />
-            <element signature="e#4620#5995#0" />
-            <element signature="e#6368#7659#0" />
-            <element signature="e#7734#9599#0" />
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="150" column="52" selection-start-line="150" selection-start-column="52" selection-end-line="150" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+            <element signature="e#3362#3611#0" />
+            <element signature="e#3782#5808#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="24">
+          <caret line="1" column="6" selection-start-line="1" selection-start-column="6" selection-end-line="1" selection-end-column="6" />
         </state>
       </provider>
     </entry>
